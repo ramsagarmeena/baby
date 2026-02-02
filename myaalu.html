@@ -14,8 +14,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    overflow: hidden;
   }
 
   .container {
@@ -23,27 +21,28 @@
     padding: 30px;
     border-radius: 25px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    max-width: 90%;
+    width: 300px;
+    height: 320px;
     position: relative;
+    text-align: center;
   }
 
   h1 {
-    font-size: 28px;
     color: #ff4d6d;
+    font-size: 26px;
   }
 
   p {
     font-size: 18px;
-    margin-bottom: 20px;
   }
 
   button {
-    font-size: 20px;
-    padding: 15px 25px;
+    font-size: 18px;
+    padding: 12px 20px;
     border: none;
     border-radius: 30px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
   }
 
   #yesBtn {
@@ -52,8 +51,7 @@
   }
 
   #noBtn {
-    background: #ccc;
-    color: black;
+    background: #ddd;
     position: absolute;
   }
 
@@ -77,17 +75,17 @@
   <p id="msg">Will you be my Valentine? 💘</p>
 
   <button id="yesBtn">YES 💖</button>
-  <button id="noBtn">NO 🙃</button>
+  <button id="noBtn" style="top: 220px; left: 170px;">NO 🙃</button>
 </div>
 
-<!-- Sound when clicking NO -->
-<audio id="noSound">
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_6d1b6b9b96.mp3" type="audio/mpeg">
+<!-- NO click sound -->
+<audio id="noSound" preload="auto">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_6d1b6b9b96.mp3">
 </audio>
 
-<!-- Romantic music for YES -->
-<audio id="loveMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5d6c9b9d69.mp3" type="audio/mpeg">
+<!-- YES romantic music -->
+<audio id="loveMusic" preload="auto" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5d6c9b9d69.mp3">
 </audio>
 
 <script>
@@ -101,41 +99,48 @@
   let yesScale = 1;
   let noCount = 0;
 
-  const noTexts = [
+  const texts = [
     "Oops 🥺",
-    "That hurt 😭",
+    "Heyyy 😭",
     "Try again 🙃",
-    "Please? 🥹",
-    "Okay… but NO is shy 😏"
+    "That hurt 🥹",
+    "You sure? 😏"
   ];
 
   function moveNo() {
+    // play sound (iPhone-safe)
+    noSound.pause();
     noSound.currentTime = 0;
     noSound.play();
 
-    msg.innerText = noTexts[noCount % noTexts.length];
+    msg.innerText = texts[noCount % texts.length];
     noCount++;
 
-    const x = Math.random() * (window.innerWidth - 120);
-    const y = Math.random() * (window.innerHeight - 80);
+    const boxRect = box.getBoundingClientRect();
+    const maxX = boxRect.width - noBtn.offsetWidth - 10;
+    const maxY = boxRect.height - noBtn.offsetHeight - 10;
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * (maxY - 120) + 120; // keep away from text
 
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 
-    yesScale += 0.25;
+    yesScale += 0.2;
     yesBtn.style.transform = `scale(${yesScale})`;
   }
 
+  // ONLY click / touch — no hover
+  noBtn.addEventListener("click", moveNo);
   noBtn.addEventListener("touchstart", moveNo);
-  noBtn.addEventListener("mouseover", moveNo);
 
   yesBtn.addEventListener("click", () => {
     loveMusic.play();
 
     box.innerHTML = `
       <div class="heart">❤️</div>
-      <h1>YAYYY PRIYANKA 🥰</h1>
-      <p>You just made my heart very happy 💖</p>
+      <h1>YAY PRIYANKA 🥰</h1>
+      <p>You are my Valentine 💖</p>
       <p>Happy Valentine’s Day ❤️</p>
     `;
   });
